@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Car Racing Game</title>
+    <style>
+        body {
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        #game {
+            font-size: 14px;
+            white-space: pre;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+    <pre id="game"></pre>
+    <script>
+        const gameWidth = 30;
+        const gameHeight = 20;
+        const car = 'xx';
+        const obstacle = 'xx';
+        const roadBorder = '|';
+        const roadEmpty = ' ';
+
+        let carPosition = Math.floor(gameWidth / 2);
+        let obstacles = [];
+
+        function draw() {
+            let display = '';
+
+            for (let y = 0; y < gameHeight; y++) {
+                let row = '';
+
+                if (y % 2 === 0) {
+                    row += roadBorder;
+                } else {
+                    row += roadEmpty;
+                }
+
+                for (let x = 0; x < gameWidth - 2; x++) {
+                    if (y === gameHeight - 1 && x === carPosition) {
+                        row += car;
+                    } else {
+                        const obstacleAtPosition = obstacles.find(o => o.y === y && o.x === x);
+                        row += obstacleAtPosition ? obstacle : roadEmpty;
+                    }
+                }
+
+                if (y % 2 === 0) {
+                    row += roadBorder;
+                } else {
+                    row += roadEmpty;
+                }
+
+                display += row + '\n';
+            }
+
+            document.getElementById('game').textContent = display;
+        }
+
+        function updateObstacles() {
+            obstacles = obstacles.filter(o => o.y < gameHeight);
+
+            if (Math.random() < 0.05) {
+                obstacles.push({
+                    x: Math.floor(Math.random() * (gameWidth - 4)),
+                    y: 0
+                });
+            }
+
+            for (const o of obstacles) {
+                o.y++;
+            }
+        }
+
+        function gameLoop() {
+            updateObstacles();
+            draw();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && carPosition > 0) {
+                carPosition--;
+            } else if (e.key === 'ArrowRight' && carPosition < gameWidth - 4) {
+                carPosition++;
+            }
+        });
+
+        setInterval(gameLoop, 100);
+    </script>
+</body>
+</html>
